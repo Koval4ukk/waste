@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <title>TrascapathianGovernmentMapSolutions</title>
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
-  <link rel="stylesheet" href="style.css">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+
   <style>
     body { margin: 0; padding: 0; }
     #map { position: absolute; top: 0; bottom: 0; width: 100%; }
@@ -24,10 +24,10 @@
 <body>
   <div id="map"></div>
   <select id="styleSelector">
-    <option value="mapbox://styles/digydep/cly7kz4yv00g601pmbyv073b7">Загальна</option>
-    <option value="mapbox://styles/digydep/clxuac41l00ug01qr2opbaeb4">Сонячна</option>
-    <option value="mapbox://styles/digydep/cly2zqdq9006901pibaryao4q">Гідро</option>
-    <option value="mapbox://styles/digydep/cly79tbbg008y01pfdgz534bg">Біо</option>
+    <option value="mapbox://styles/digydep/cm01h4p31008c01ph690oa3ei">Централізоване збирання ТПВ</option>
+    <option value="mapbox://styles/digydep/cm01i294z008601qtge9hf36f">Роздільне збирання ТПВ</option>
+    <option value="mapbox://styles/digydep/cm01iglhc007v01qw9x86hs73">Ціноутворення</option>
+    <option value="mapbox://styles/digydep/cm02wzm0z00bg01pl0b530ife">Не охоплені послугою</option>
   </select>
   <script>
     mapboxgl.accessToken = 'pk.eyJ1IjoiZGlneWRlcCIsImEiOiJjbGYxNDQwMTIwNHJkM3hyMGdzYzM0djFjIn0.7jGv0vgJNN3BdxdQZoQY4g';
@@ -42,7 +42,7 @@
 
     const map = new mapboxgl.Map({
       container: 'map', // container ID
-      style: 'mapbox://styles/digydep/cly7kz4yv00g601pmbyv073b7', // initial style URL
+      style: 'mapbox://styles/digydep/cm02wzm0z00bg01pl0b530ife', // initial style URL
       center: initialCenter, // starting position [lng, lat]
       zoom: initialZoom, // starting zoom
       maxBounds: bounds,
@@ -118,17 +118,17 @@
             });
           });
         });
-      };
+       };
 
-      map.off('click', 'Energy');
+      map.off('click', 'except');
 
-      if (map.getLayer('Energy')) {
-        map.on('click', 'Energy', popupHandler);
+      if (map.getLayer('except')) {
+        map.on('click', 'except', popupHandler);
       }
     };
 
     map.on('style.load', () => {
-      const initialProperty = 'solarName'; // Default property for the initial style
+      const initialProperty = 'except'; // Default property for the initial style
       setTimeout(() => addPopup(initialProperty), 1000); // Delay to ensure the layer is loaded
     });
 
@@ -145,10 +145,10 @@
 
     const styleSelector = document.getElementById('styleSelector');
     const properties = {
-      'mapbox://styles/digydep/cly7kz4yv00g601pmbyv073b7': 'solarName',
-      'mapbox://styles/digydep/clxuac41l00ug01qr2opbaeb4': 'solarName',
-      'mapbox://styles/digydep/cly2zqdq9006901pibaryao4q': 'hydroName',
-      'mapbox://styles/digydep/cly79tbbg008y01pfdgz534bg': 'bioName'
+      'mapbox://styles/digydep/cm01h4p31008c01ph690oa3ei': 'central',
+      'mapbox://styles/digydep/cm01i294z008601qtge9hf36f': 'sorted',
+      'mapbox://styles/digydep/cm01iglhc007v01qw9x86hs73': 'pricing',
+      'mapbox://styles/digydep/cm02wzm0z00bg01pl0b530ife': 'except'
     };
 
     styleSelector.addEventListener('change', () => {
