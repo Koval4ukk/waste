@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>TrascapathianGovernmentMapSolutions</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    #styleSelector {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      padding: 10px;
+      border-radius: 4px;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <select id="styleSelector">
+    <option value="mapbox://styles/digydep/cly7kz4yv00g601pmbyv073b7">Загальна</option>
+    <option value="mapbox://styles/digydep/clxuac41l00ug01qr2opbaeb4">Сонячна</option>
+    <option value="mapbox://styles/digydep/cly2zqdq9006901pibaryao4q">Гідро</option>
+    <option value="mapbox://styles/digydep/cly79tbbg008y01pfdgz534bg">Біо</option>
+  </select>
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZGlneWRlcCIsImEiOiJjbGYxNDQwMTIwNHJkM3hyMGdzYzM0djFjIn0.7jGv0vgJNN3BdxdQZoQY4g';
+    const bounds = [
+      [22.06211, 47.86616], // Southwest coordinates
+      [24.7041023, 49.12407]  // Northeast coordinates  
+    ];
+    const initialCenter = [23.290417, 48.392914];
+    const initialZoom = 8.26;
+    const initialBearing = 0;
+    const initialPitch = 41;
+
+    const map = new mapboxgl.Map({
+      container: 'map', // container ID
+      style: 'mapbox://styles/digydep/cly7kz4yv00g601pmbyv073b7', // initial style URL
+      center: initialCenter, // starting position [lng, lat]
+      zoom: initialZoom, // starting zoom
+      maxBounds: bounds,
+ //     maxZoom: 18,
+      pitch: 25
+    });
+
+    let currentPopup = null; // Variable to track the current popup
+
+    // Function to load the locations from the JSON file
+    const loadLocations = async () => {
+      try {
+        const response = await fetch('locations.json');
+        const locations = await response.json();
+        return locations;
+      } catch (error) {
+        console.error('Error loading locations:', error);
+        return {};
+      }
+    };
+
+    const addPopup = async (property) => {
+      const locations = await loadLocations();
+
+      const popupHandler = (e) => {
+        if (currentPopup) {
+          currentPopup.remove(); // Close the existing popup
+        }
+        const name = e.features[0].properties.name;
+        const propertyValues = e.features[0].properties[property].split(',');
+        
+        let content = name + '<p>';
+
+        propertyValues.forEach(value => {
+          if (locations[value]) {
+            content += `<a href="#" class="location-link" data-location='${JSON.stringify(locations[value])}'>${value}</a><br>`;
+          } else {
+            content += `<a href="#" class="default-location-link">${value}</a><br>`;
+          }
+        });
+        
+        content += '</p>';
+
+        currentPopup = new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(content)
+          .addTo(map);
+
+        document.querySelectorAll('.location-link').forEach(link => {
+          link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const location = JSON.parse(event.target.getAttribute('data-location'));
+            map.flyTo({
+              center: [location.lon, location.lat],
+              zoom: location.zoom,
+              bearing: location.bearing,
+              pitch:location.pitch,
+              essential: true // This animation is considered essential with respect to prefers-reduced-motion
+            });
+          });
+        });
+
+        document.querySelectorAll('.default-location-link').forEach(link => {
+          link.addEventListener('click', (event) => {
+            event.preventDefault();
+            map.flyTo({
+              center: initialCenter,
+              zoom: initialZoom,
+              bearing: initialBearing,
+              pitch: initialPitch,
+              duration: 10000,
+              essential: true // This animation is considered essential with respect to prefers-reduced-motion
+            });
+          });
+        });
+      };
+
+      map.off('click', 'Energy');
+
+      if (map.getLayer('Energy')) {
+        map.on('click', 'Energy', popupHandler);
+      }
+    };
+
+    map.on('style.load', () => {
+      const initialProperty = 'solarName'; // Default property for the initial style
+      setTimeout(() => addPopup(initialProperty), 1000); // Delay to ensure the layer is loaded
+    });
+
+    map.on('error', (e) => {
+      console.error('Map error:', e.error.message);
+    });
+
+    document.querySelector('.mapboxgl-ctrl-bottom-right').innerHTML = 'Розробка Закарпатської ОВА (С)';
+    document.querySelector('.mapboxgl-ctrl-bottom-left').innerHTML = '<img class="logo" src="img/logo.png">';
+    document.querySelector('.logo').style.width = '15%';
+    document.querySelector('.logo').style.opacity = '75%';
+    document.querySelector('.logo').style.paddingLeft = '40px';
+    document.querySelector('.logo').style.paddingBottom = '40px';
+
+    const styleSelector = document.getElementById('styleSelector');
+    const properties = {
+      'mapbox://styles/digydep/cly7kz4yv00g601pmbyv073b7': 'solarName',
+      'mapbox://styles/digydep/clxuac41l00ug01qr2opbaeb4': 'solarName',
+      'mapbox://styles/digydep/cly2zqdq9006901pibaryao4q': 'hydroName',
+      'mapbox://styles/digydep/cly79tbbg008y01pfdgz534bg': 'bioName'
+    };
+
+    styleSelector.addEventListener('change', () => {
+      const selectedStyle = styleSelector.value;
+      try {
+        map.setStyle(selectedStyle);
+        map.once('style.load', () => {
+          setTimeout(() => addPopup(properties[selectedStyle]), 1000); // Delay to ensure the layer is loaded
+        });
+      } catch (error) {
+        console.error('Error setting style:', error);
+      }
+    });
+  </script>
+</body>
+</html>
