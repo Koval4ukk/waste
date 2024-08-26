@@ -46,8 +46,6 @@
       center: initialCenter, // starting position [lng, lat]
       zoom: initialZoom, // starting zoom
       maxBounds: bounds,
- //     maxZoom: 18,
- //     pitch: 25
     });
 
     let currentPopup = null; // Variable to track the current popup
@@ -71,64 +69,42 @@
         if (currentPopup) {
           currentPopup.remove(); // Close the existing popup
         }
-        const name = e.features[0].properties.name;
-        const propertyValues = e.features[0].properties[property].split(',');
-        
-        let content = name + '<p>';
 
-        propertyValues.forEach(value => {
-          if (locations[value]) {
-            content += `<a href="#" class="location-link" data-location='${JSON.stringify(locations[value])}'>${value}</a><br>`;
-          } else {
-            content += `<a href="#" class="default-location-link">${value}</a><br>`;
-          }
-        });
-        
-        content += '</p>';
+        const name = e.features[0].properties.otgName + " ТГ"+'<p>' +'<p>' + e.features[0].properties.region+" район";
+        let content = name;
+
+        if (locations[e.features[0].properties[property]]) {
+          const location = locations[e.features[0].properties[property]];
+          content += `<a href="#" class="location-link" data-location='${JSON.stringify(location)}'>Go to Location</a>`;
+        }
 
         currentPopup = new mapboxgl.Popup()
           .setLngLat(e.lngLat)
           .setHTML(content)
           .addTo(map);
 
-        document.querySelectorAll('.location-link').forEach(link => {
-          link.addEventListener('click', (event) => {
-            event.preventDefault();
-            const location = JSON.parse(event.target.getAttribute('data-location'));
-            map.flyTo({
-              center: [location.lon, location.lat],
-              zoom: location.zoom,
-              bearing: location.bearing,
-              pitch:location.pitch,
-              essential: true // This animation is considered essential with respect to prefers-reduced-motion
-            });
+        document.querySelector('.location-link')?.addEventListener('click', (event) => {
+          event.preventDefault();
+          const location = JSON.parse(event.target.getAttribute('data-location'));
+          map.flyTo({
+            center: [location.lon, location.lat],
+            zoom: location.zoom,
+            bearing: location.bearing,
+            pitch: location.pitch,
+            essential: true // This animation is considered essential with respect to prefers-reduced-motion
           });
         });
+      };
 
-        document.querySelectorAll('.default-location-link').forEach(link => {
-          link.addEventListener('click', (event) => {
-            event.preventDefault();
-            map.flyTo({
-              center: initialCenter,
-              zoom: initialZoom,
-              bearing: initialBearing,
-              pitch: initialPitch,
-              duration: 10000,
-              essential: true // This animation is considered essential with respect to prefers-reduced-motion
-            });
-          });
-        });
-       };
+      map.off('click', 'vidxody');
 
-      map.off('click', 'except');
-
-      if (map.getLayer('except')) {
-        map.on('click', 'except', popupHandler);
+      if (map.getLayer('vidxody')) {
+        map.on('click', 'vidxody', popupHandler);
       }
     };
 
     map.on('style.load', () => {
-      const initialProperty = 'except'; // Default property for the initial style
+      const initialProperty = 'vidxody'; // Default property for the initial style
       setTimeout(() => addPopup(initialProperty), 1000); // Delay to ensure the layer is loaded
     });
 
