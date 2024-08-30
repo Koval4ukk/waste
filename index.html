@@ -70,7 +70,7 @@
           currentPopup.remove(); // Close the existing popup
         }
 
-        const name = e.features[0].properties.otgName + " ТГ"+'<p>' +'<p>' + e.features[0].properties.region+" район";
+        const name = e.features[0].properties.region+" район"+'<p>'+e.features[0].properties.otgName + " ТГ"+'<p>'+"Орієнтовний річний обсяг зібраного ТПВ"+":"+'<p>'+e.features[0].properties.volYear+" т."+'/'+e.features[0].properties.weightYear+" куб.м";
         let content = name;
 
         if (locations[e.features[0].properties[property]]) {
