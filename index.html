@@ -28,7 +28,6 @@
     <option value="mapbox://styles/digydep/cm01i294z008601qtge9hf36f">Роздільне збирання ТПВ</option>
     <option value="mapbox://styles/digydep/cm01iglhc007v01qw9x86hs73">Ціноутворення</option>
     <option value="mapbox://styles/digydep/cm02wzm0z00bg01pl0b530ife">Не охоплені послугою</option>
-    <option value="mapbox://styles/digydep/cm0exh18x003x01pehg11f2tb">Орієнтовний річний обсяг зібраного ТПВ, куб.м</option>
   </select>
   <script>
     mapboxgl.accessToken = 'pk.eyJ1IjoiZGlneWRlcCIsImEiOiJjbGYxNDQwMTIwNHJkM3hyMGdzYzM0djFjIn0.7jGv0vgJNN3BdxdQZoQY4g';
@@ -71,11 +70,21 @@
           currentPopup.remove(); // Close the existing popup
         }
 
-        const name = e.features[0].properties.region+" район"+'<p>'+e.features[0].properties.otgName + " ТГ"+'<p>'+"Орієнтовний річний обсяг зібраного ТПВ"+":"+'<p>'+e.features[0].properties.volYear+" т."+'/'+e.features[0].properties.weightYear+" куб.м";
-        let content = name;
+        const properties = e.features[0].properties;
+        const region = properties.region + " район";
+        const otgName = properties.otgName + " ТГ";
+        const volYear = "Орієнтовний річний обсяг зібраного ТПВ: " + properties.volYear + " т.";
+        const weightYear = properties.weightYear + " куб.м";
 
-        if (locations[e.features[0].properties[property]]) {
-          const location = locations[e.features[0].properties[property]];
+        // Filter out any undefined providers
+        const providers = [properties.provider1, properties.provider2, properties.provider3]
+          .filter(provider => provider) // Remove undefined or empty values
+          .join('<p>'); // Join the remaining providers with a space
+
+        let content = `${region}<p>${otgName}<p>${volYear}/${weightYear}<p>${providers}`;
+
+        if (locations[properties[property]]) {
+          const location = locations[properties[property]];
           content += `<a href="#" class="location-link" data-location='${JSON.stringify(location)}'>Go to Location</a>`;
         }
 
@@ -125,8 +134,7 @@
       'mapbox://styles/digydep/cm01h4p31008c01ph690oa3ei': 'central',
       'mapbox://styles/digydep/cm01i294z008601qtge9hf36f': 'sorted',
       'mapbox://styles/digydep/cm01iglhc007v01qw9x86hs73': 'pricing',
-      'mapbox://styles/digydep/cm02wzm0z00bg01pl0b530ife': 'except',
-      'mapbox://styles/digydep/cm0exh18x003x01pehg11f2tb': 'volume'
+      'mapbox://styles/digydep/cm02wzm0z00bg01pl0b530ife': 'except'
     };
 
     styleSelector.addEventListener('change', () => {
