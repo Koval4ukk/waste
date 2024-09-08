@@ -5,7 +5,7 @@
       "properties": {
         "LAYER": "Unknown Area Type",
         "ADMIN_1": "Закарпатська область",
-        "ADMIN_2": "Мукачівський район"
+        "ADMIN_2": "Мукачівський"
       },
       "geometry": {
         "coordinates": [
@@ -5346,7 +5346,7 @@
       "properties": {
         "LAYER": "Unknown Area Type",
         "ADMIN_1": "Закарпатська область",
-        "ADMIN_2": "Берегівський район"
+        "ADMIN_2": "Берегівський"
       },
       "geometry": {
         "coordinates": [
@@ -9809,7 +9809,7 @@
       "properties": {
         "LAYER": "Unknown Area Type",
         "ADMIN_1": "Закарпатська область",
-        "ADMIN_2": "Хустський район"
+        "ADMIN_2": "Хустський"
       },
       "geometry": {
         "coordinates": [
@@ -9895,7 +9895,7 @@
       "properties": {
         "LAYER": "Unknown Area Type",
         "ADMIN_1": "Закарпатська область",
-        "ADMIN_2": "Тячівський район"
+        "ADMIN_2": "Тячівський"
       },
       "geometry": {
         "coordinates": [
@@ -13941,7 +13941,7 @@
       "properties": {
         "LAYER": "Unknown Area Type",
         "ADMIN_1": "Закарпатська область",
-        "ADMIN_2": "Ужгородський район"
+        "ADMIN_2": "Ужгородський"
       },
       "geometry": {
         "coordinates": [
@@ -17732,7 +17732,7 @@
       "properties": {
         "LAYER": "Unknown Area Type",
         "ADMIN_1": "Закарпатська область",
-        "ADMIN_2": "Рахівський район"
+        "ADMIN_2": "Рахівський"
       },
       "geometry": {
         "coordinates": [
@@ -21078,7 +21078,7 @@
       "properties": {
         "LAYER": "Unknown Area Type",
         "ADMIN_1": "Закарпатська область",
-        "ADMIN_2": "Хустський район"
+        "ADMIN_2": "Хустський"
       },
       "geometry": {
         "coordinates": [
